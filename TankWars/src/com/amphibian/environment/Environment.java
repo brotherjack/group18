@@ -1,4 +1,4 @@
-package com.example.tankwars;
+package com.amphibian.environment;
 
 import android.graphics.Canvas;
 import android.view.View;

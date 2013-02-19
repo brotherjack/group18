@@ -1,4 +1,4 @@
-package com.example.tankwars;
+package com.amphibian.tankwars;
 
 import com.example.tankwars.R;
 
