@@ -14,6 +14,7 @@ public class Tank {
 	private Armor selected_armor;
 	private Bitmap base_sprite;
 	private Locomotion locomotion_entity;
+	private Turret turret_entity;
 	
 	public Returnvals take_damage(Damage dmgsrc){
 		return Returnvals.SUCCESS;
