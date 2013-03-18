@@ -8,6 +8,8 @@
     <string name ="rightArrow">rightArrow</string>
     <string name ="leftArrow">leftArrow</string>
     <string name ="fireButton">fireButton</string>
+    <string name ="leftHealthTextView">100</string>
+    <string name ="rightHealthTextView">100</string>
     
 
 </resources>
