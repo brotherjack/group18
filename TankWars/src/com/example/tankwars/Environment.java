@@ -14,6 +14,8 @@
  */
 package com.example.tankwars;
 
+import com.amphibian.tank.Tank;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

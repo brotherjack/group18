@@ -14,7 +14,7 @@
  * In Progress: Still needs to incorporate hit points 
  * and needs to announce whether it's still alive.
  */
-package com.example.tankwars;
+package com.amphibian.tank;
 
 import android.graphics.RectF;
 
@@ -43,7 +43,7 @@ public class Tank {
      * @param position
      * @param rotateLeft
      */
-    Tank(int position, boolean rotateLeft) {
+    public Tank(int position, boolean rotateLeft) {
         power = 100;
         degrees = 0;
         health = 100;
@@ -98,7 +98,7 @@ public class Tank {
      * This returns whether the tank is facing left or right. 
      * @return Returns true if it's facing left, right otherwise.
      */
-    boolean getRotate() {
+    public boolean getRotate() {
         return rotateLeft;
     }
     
@@ -108,7 +108,7 @@ public class Tank {
      * @author Edward Jezisek
      * @param isRight
      */
-    void move(boolean isRight, Tank otherTank) {
+    public void move(boolean isRight, Tank otherTank) {
         if (!this.rotateLeft) {
             rect.set(positionx+2, 128, positionx + 50, 150);
         }
@@ -210,7 +210,7 @@ public class Tank {
      * Moves the tank's turret.
      * @param isUp
      */
-    void turret_move(boolean isUp) {
+    public void turret_move(boolean isUp) {
         if(isUp && degrees <= (90 - DEGREE_AMMOUNT))
             degrees += DEGREE_AMMOUNT;
         else if(!isUp && degrees >= 0 + DEGREE_AMMOUNT)
