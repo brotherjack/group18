@@ -19,7 +19,6 @@ package com.amphibian.tank;
 import android.graphics.RectF;
 
 public class Tank {
-    final double MOVE_AMMOUNT = 1;
     final double DEGREE_AMMOUNT = 1;
     final double GRAVITY = 1;
     final int SCREEN_MAX = 500;
@@ -35,6 +34,7 @@ public class Tank {
     private float bulletYPos;
     private double power;
     private float degrees;
+    public Locomotion locomotive_entity;
     
     enum WEAPON{GUN};
     
@@ -49,6 +49,7 @@ public class Tank {
         health = 100;
         this.rotateLeft = rotateLeft;
         this.positionx = position;
+        this.locomotive_entity = new Locomotion.Treads();
         if (!this.rotateLeft) {
             rect.set(positionx+2, 128, positionx + 50, 150);
         }
@@ -108,19 +109,21 @@ public class Tank {
      * @author Edward Jezisek
      * @param isRight
      */
-    public void move(boolean isRight, Tank otherTank) {
-        if (!this.rotateLeft) {
-            rect.set(positionx+2, 128, positionx + 50, 150);
-        }
-        else {
-            rect.set(positionx, 128, positionx + 48, 150);
-        }
-        if(isRight && canMove(MOVE_AMMOUNT, isRight, otherTank)) {
-            positionx += MOVE_AMMOUNT;
-        }
-        else if(!isRight && canMove(MOVE_AMMOUNT, isRight, otherTank)) {
-            positionx -= MOVE_AMMOUNT;
-        }
+    public void move_tank(boolean isRight, Tank otherTank) {
+    	if(this.locomotive_entity != null){
+	    	if (!this.rotateLeft) {
+	            rect.set(positionx+2, 128, positionx + 50, 150);
+	        }
+	        else {
+	            rect.set(positionx, 128, positionx + 48, 150);
+	        }
+	        if(isRight && canMove(this.locomotive_entity.speed, isRight, otherTank)) {
+	            positionx += this.locomotive_entity.speed;
+	        }
+	        else if(!isRight && canMove(this.locomotive_entity.speed, isRight, otherTank)) {
+	            positionx -= this.locomotive_entity.speed;
+	        }
+    	}
     }
     
     /**

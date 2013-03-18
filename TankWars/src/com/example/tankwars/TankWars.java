@@ -38,9 +38,11 @@ import android.widget.Toast;
 
 public class TankWars extends Activity {
     private enum moveVal{moveLeft, moveRight, turrUp, turrDown, fire};
+    //TODO private Tank activePlayer;
+    //TODO private ArrayList<Tank> players;
     private Tank playerOne;
     private Tank playerTwo;
-    private boolean playerOneActive = true;
+    private boolean playerOneActive = true; //TODO remove, when ready for multiplayer
     private ImageView Environment;
     private ImageView Directions[] = new ImageView[5];
     private boolean deleteThreadRunning = false;
@@ -62,6 +64,7 @@ public class TankWars extends Activity {
     @SuppressLint("UseSparseArrays")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+    	//TODO Make intro menu, new game and buy item menus
         //Create the first tank
         playerOne = new Tank(100, true);
         //Create the second tank
@@ -72,7 +75,6 @@ public class TankWars extends Activity {
         soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 100);
         soundPoolMap = new HashMap<Integer, Integer>();
         soundPoolMap.put(soundID, soundPool.load(this, R.raw.s1, 1));
-        
         
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tank_game_main);
@@ -137,7 +139,7 @@ public class TankWars extends Activity {
      * @param v
      */
     public void moveTankRight(View v) {
-        playerOne.move(true, playerTwo);
+        playerOne.move_tank(true, playerTwo);
     }
     
     /**
@@ -209,6 +211,7 @@ public class TankWars extends Activity {
      */
     private void startMoveThread(final moveVal move, final Tank currPlayer,
             final Tank otherPlayer) {
+    	//TODO Make for loop for checking player array for winner
         // Check if a player has won
         if (playerOne.health == 0) {
             Toast.makeText(getBaseContext(), "Player Two Wins",
@@ -283,7 +286,7 @@ public class TankWars extends Activity {
                                     playerOne.hasCollided = false;
                                     playerTwo.hasCollided = false;
                                 }
-                                currPlayer.move(true, otherPlayer);
+                                currPlayer.move_tank(true, otherPlayer);
                                 drawEnvironment();
                                 Environment.invalidate();
                                 break;
@@ -315,7 +318,7 @@ public class TankWars extends Activity {
                                     playerOne.hasCollided = false;
                                     playerTwo.hasCollided = false;
                                 }
-                                currPlayer.move(false, otherPlayer);
+                                currPlayer.move_tank(false, otherPlayer);
                                 drawEnvironment();
                                 Environment.invalidate();
                                 break;

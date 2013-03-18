@@ -10,7 +10,7 @@ public abstract class Locomotion {
 	
 	public static class Treads extends Locomotion{
 		public Treads(){
-			this.speed = 5; //TODO make an enum for this?
+			this.speed = 1; //TODO make an enum for this?
 			//TODO this.sprite = NEED SPRITE!
 			this.cost = 0;
 			this.weight = 0; //TODO worry about this latter!
