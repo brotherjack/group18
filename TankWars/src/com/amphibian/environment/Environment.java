@@ -12,9 +12,12 @@
  * Description: Environment which draws all the tanks, the bullets, etc..
  * In Progress: Need to implement collision detection.
  */
-package com.example.tankwars;
+package com.amphibian.environment;
 
 import com.amphibian.tank.Tank;
+import com.example.tankwars.Bitmaps;
+import com.example.tankwars.R;
+import com.example.tankwars.R.drawable;
 
 import android.content.Context;
 import android.graphics.Bitmap;

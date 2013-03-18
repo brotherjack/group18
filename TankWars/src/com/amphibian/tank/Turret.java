@@ -1,6 +1,6 @@
 package com.amphibian.tank;
 
-//import com.amphibian.environment.Environment;
+import com.amphibian.environment.Environment;
 import com.amphibian.tank.Shell.Standard_Shell;
 
 public abstract class Turret {
@@ -8,10 +8,10 @@ public abstract class Turret {
 	protected int angle;
 	protected Armament selected_weapon;
 	
-	/*private double calculate_trajectory(Environment environ){
+	private double calculate_trajectory(Environment environ){
 		double trajectory = 0.0;
 		return trajectory;
-	}*/
+	}
 	
 	private void fire(){
 		
