@@ -8,6 +8,8 @@ public abstract class Locomotion {
 	protected int cost;
 	protected int weight;
 	
+	public int getSpeed() { return this.speed; }
+	
 	public static class Treads extends Locomotion{
 		public Treads(){
 			this.speed = 1; //TODO make an enum for this?

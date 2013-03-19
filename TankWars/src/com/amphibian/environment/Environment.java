@@ -37,12 +37,14 @@ public class Environment {
     Paint paint;
     final int tankWidth = 50;
     final int tankHeight = 25;
+    final int SCREEN_MAX = 500;
+    final int SCREEN_MIN = 0;
     final Bitmap.Config conf = Bitmap.Config.ARGB_8888;
     public RectF lScreenBorder = new RectF(0, 0, 0, 0);
     public RectF rScreenBorder = new RectF(0, 0, 0, 0);
     public RectF bulHitBox = new RectF(0, 0, 0, 0);
     private Bitmap curr;
-    private ArrayList<Player> active_players; //TODO Should this be an array?
+    private ArrayList<HumanPlayer> active_players; //TODO Should this be an array?
     private Bitmap turretLeft;
     private Bitmap turretRight;
     private Bitmap bullet;
@@ -61,13 +63,104 @@ public class Environment {
             paint.setAntiAlias(true);
             curr = Bitmap.createBitmap(screenWidth, screenHeight, conf);
             canvas = new Canvas(curr);
+            this.active_players = new ArrayList<HumanPlayer>();
             this.initializeTanks();
             this.refreshEnvironment();
             lScreenBorder = new RectF(0, 0, 1, 300);
             rScreenBorder = new RectF(499,0,500,300);
         }
     
-    public ArrayList<Player> get_active_players() { return this.active_players; }
+    public ArrayList<HumanPlayer> get_active_players() { return this.active_players; }
+    
+    /**
+     * Ensures the tank is able to move. 
+     * Takes in the direction to move and the move amount.
+     * @param moveAmmount
+     * @param isRight
+     * @return true if tank can move, false otherwise.
+     */
+    public boolean canMove(Tank activeTank, boolean goingRight) {
+        RectF lScreenBorder = new RectF(0, 0, 0, 300);
+        RectF rScreenBorder = new RectF(500,0,500,300);
+        final int TANK_SPEED = activeTank.locomotive_entity.getSpeed();
+        if (!activeTank.hasCollided) {    // Collision not detected
+            if(goingRight)
+                return (activeTank.getPosition()[0] + TANK_SPEED < SCREEN_MAX);
+            else
+                return (activeTank.getPosition()[0] - TANK_SPEED > SCREEN_MIN);
+        }
+        
+        else if (activeTank.hasCollided()) {    // Collision detected try to move away.
+            
+            if (goingRight) {
+            	for(HumanPlayer otherPlayer : this.active_players){
+            		Tank otherTank = otherPlayer.get_controlled_tank();
+	                activeTank.rect.set((float) (activeTank.rect.left + TANK_SPEED),
+	                        activeTank.rect.top,
+	                        (float) (activeTank.rect.right + TANK_SPEED),
+	                        activeTank.rect.bottom);
+	
+	                if (activeTank.rect.intersect(otherTank.rect)) {
+	                    activeTank.rect.set((float) (activeTank.rect.left - TANK_SPEED),
+	                            activeTank.rect.top,
+	                            (float) (activeTank.rect.right - TANK_SPEED),
+	                            activeTank.rect.bottom);
+	                    return false;
+	                }
+	                else if (activeTank.rect.intersect(lScreenBorder)) {
+	                    activeTank.rect.set((float) (activeTank.rect.left - TANK_SPEED),
+	                            activeTank.rect.top,
+	                            (float) (activeTank.rect.right - TANK_SPEED),
+	                            activeTank.rect.bottom);
+	                    return false;
+	                }
+	                else if (activeTank.rect.intersect(rScreenBorder)) {
+	                    activeTank.rect.set((float) (activeTank.rect.left - TANK_SPEED),
+	                            activeTank.rect.top,
+	                            (float) (activeTank.rect.right - TANK_SPEED),
+	                            activeTank.rect.bottom);
+	                }
+	                else {
+	                    return true;
+	                }
+            	}
+            }
+            
+            else if (!goingRight) {
+            	for(HumanPlayer otherPlayer : this.active_players){
+            		Tank otherTank = otherPlayer.get_controlled_tank();
+	                activeTank.rect.set((float) (activeTank.rect.left - TANK_SPEED),
+	                        activeTank.rect.top,
+	                        (float) (activeTank.rect.right - TANK_SPEED),
+	                        activeTank.rect.bottom);
+	                if (activeTank.rect.intersect(otherTank.rect)) {
+	                    activeTank.rect.set((float) (activeTank.rect.left + TANK_SPEED),
+	                            activeTank.rect.top,
+	                            (float) (activeTank.rect.right + TANK_SPEED),
+	                            activeTank.rect.bottom);
+	                    return false;
+	                }
+	                else if (activeTank.rect.intersect(lScreenBorder)) {
+	                    activeTank.rect.set((float) (activeTank.rect.left - TANK_SPEED),
+	                            activeTank.rect.top,
+	                            (float) (activeTank.rect.right - TANK_SPEED),
+	                            activeTank.rect.bottom);
+	                    return false;
+	                }
+	                else if (activeTank.rect.intersect(rScreenBorder)) {
+	                    activeTank.rect.set((float) (activeTank.rect.left - TANK_SPEED),
+	                            activeTank.rect.top,
+	                            (float) (activeTank.rect.right - TANK_SPEED),
+	                            activeTank.rect.bottom);
+	                }
+	                else {
+	                    return true;
+	                }
+            	}
+            }
+        }
+        return false;
+    }
     
     private void initializeTanks() {
     	Bitmap tankRight;

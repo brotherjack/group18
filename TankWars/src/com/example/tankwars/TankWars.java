@@ -39,7 +39,6 @@ import android.widget.Toast;
 public class TankWars extends Activity {
     private enum moveVal{moveLeft, moveRight, turrUp, turrDown, fire};
     //TODO private Tank activePlayer;
-    //TODO private ArrayList<Tank> players;
     private Tank playerOne;
     private Tank playerTwo;
     private boolean playerOneActive = true; //TODO remove, when ready for multiplayer
@@ -70,6 +69,7 @@ public class TankWars extends Activity {
         theEnvironment = new Environment(this, 500, 300);
         playerOne = theEnvironment.get_active_players().get(0).get_controlled_tank();
         playerTwo = theEnvironment.get_active_players().get(1).get_controlled_tank();
+        
         //Create sound interface.
         soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 100);
         soundPoolMap = new HashMap<Integer, Integer>();
@@ -138,7 +138,7 @@ public class TankWars extends Activity {
      * @param v
      */
     public void moveTankRight(View v) {
-        playerOne.move_tank(true, playerTwo);
+        playerOne.move_tank(true, theEnvironment);
     }
     
     /**
@@ -285,7 +285,7 @@ public class TankWars extends Activity {
                                     playerOne.hasCollided = false;
                                     playerTwo.hasCollided = false;
                                 }
-                                currPlayer.move_tank(true, otherPlayer);
+                                currPlayer.move_tank(true, theEnvironment);
                                 drawEnvironment();
                                 Environment.invalidate();
                                 break;
@@ -317,7 +317,7 @@ public class TankWars extends Activity {
                                     playerOne.hasCollided = false;
                                     playerTwo.hasCollided = false;
                                 }
-                                currPlayer.move_tank(false, otherPlayer);
+                                currPlayer.move_tank(false, theEnvironment);
                                 drawEnvironment();
                                 Environment.invalidate();
                                 break;
