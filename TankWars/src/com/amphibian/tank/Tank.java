@@ -16,6 +16,7 @@
  */
 package com.amphibian.tank;
 
+import android.graphics.Bitmap;
 import android.graphics.RectF;
 
 public class Tank {
@@ -35,6 +36,7 @@ public class Tank {
     private double power;
     private float degrees;
     public Locomotion locomotive_entity;
+    public Bitmap sprite;
     
     enum WEAPON{GUN};
     
@@ -43,11 +45,11 @@ public class Tank {
      * @param position
      * @param rotateLeft
      */
-    public Tank(int position, boolean rotateLeft) {
+    public Tank(int position, boolean rotateLeft, Bitmap mySprite) {
         power = 100;
         degrees = 0;
         health = 100;
-        this.rotateLeft = rotateLeft;
+        this.rotateLeft = rotateLeft; //TODO change with Player owner
         this.positionx = position;
         this.locomotive_entity = new Locomotion.Treads();
         if (!this.rotateLeft) {
@@ -56,6 +58,8 @@ public class Tank {
         else {
             rect.set(positionx, 128, positionx + 48, 150);
         }
+        
+        this.sprite = mySprite;
     }
     
     /**

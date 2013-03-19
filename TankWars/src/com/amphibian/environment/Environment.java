@@ -14,6 +14,9 @@
  */
 package com.amphibian.environment;
 
+import java.util.ArrayList;
+
+import com.amphibian.player.*;
 import com.amphibian.tank.Tank;
 import com.example.tankwars.Bitmaps;
 import com.example.tankwars.R;
@@ -38,11 +41,8 @@ public class Environment {
     public RectF lScreenBorder = new RectF(0, 0, 0, 0);
     public RectF rScreenBorder = new RectF(0, 0, 0, 0);
     public RectF bulHitBox = new RectF(0, 0, 0, 0);
-    public boolean isLeftTankHit = false;
-    public boolean isRightTankHit = false;
     private Bitmap curr;
-    private Bitmap tankRight;
-    private Bitmap tankLeft;
+    private ArrayList<Player> active_players; //TODO Should this be an array?
     private Bitmap turretLeft;
     private Bitmap turretRight;
     private Bitmap bullet;
@@ -61,13 +61,17 @@ public class Environment {
             paint.setAntiAlias(true);
             curr = Bitmap.createBitmap(screenWidth, screenHeight, conf);
             canvas = new Canvas(curr);
-            createTankBitmap();
-            refreshEnvironment();
+            this.initializeTanks();
+            this.refreshEnvironment();
             lScreenBorder = new RectF(0, 0, 1, 300);
             rScreenBorder = new RectF(499,0,500,300);
         }
     
-    public void createTankBitmap() {
+    public ArrayList<Player> get_active_players() { return this.active_players; }
+    
+    private void initializeTanks() {
+    	Bitmap tankRight;
+    	Bitmap tankLeft; //TODO Rename these, make for loop for initializing multiple tanks
         //This creates the right tank bitmap.
         tankRight = BitmapFactory.decodeResource(context.getResources(), 
                                                     R.drawable.tank);
@@ -95,6 +99,19 @@ public class Environment {
                             R.drawable.bullet);
         bullet = Bitmaps.resizeBitmap(bullet, bullet.getHeight() / 7,
                             bullet.getWidth() / 7);
+        
+        //Create the first tank
+        Tank tankOne = new Tank(100, true, tankLeft);
+        //Create the second tank
+        Tank tankTwo = new Tank(400, false, tankRight);
+        
+      //TODO need for loop for initializing players, may need to put in Environment constructor
+    	HumanPlayer playerOne = new HumanPlayer(0, tankOne, "Patton");
+    	HumanPlayer playerTwo = new HumanPlayer(0, tankTwo, "Rommel");
+    	
+    	//Add all players to list of active players        
+        this.active_players.add(playerOne); //TODO change as part of initialize multiple tank for loop
+        this.active_players.add(playerTwo);
     }
     
     public void refreshEnvironment() {
@@ -105,12 +122,7 @@ public class Environment {
     }
     
     public void drawTank(Tank aTank) {
-        if(aTank.getRotate()) {
-            canvas.drawBitmap(tankLeft, aTank.getX(), 150 - tankHeight, paint);
-        }
-        else {
-            canvas.drawBitmap(tankRight,aTank.getX(), 150 - tankHeight, paint);
-        }
+    	canvas.drawBitmap(aTank.sprite, aTank.getX(), 150 - tankHeight, paint);
         drawTurret(aTank);
     }
     
@@ -118,7 +130,7 @@ public class Environment {
         Matrix matrix = new Matrix();
     
         if(aTank.getRotate()) {
-            float xPos = aTank.getX() + tankLeft.getWidth() - 20;
+            float xPos = aTank.getX() + aTank.sprite.getWidth() - 20;
             float yPos = (float) (150 - .75 * tankHeight);
             matrix.setRotate(-aTank.getDegrees(), 0, 0);
             matrix.postTranslate(xPos, yPos);
@@ -153,6 +165,10 @@ public class Environment {
         paint.setColor(Color.BLACK);
         canvas.drawCircle(xPos, yPos, 5, paint);
 //        drawBulletHitBox();
+    }
+    
+    public void placeTanks(){
+    	
     }
 
 }

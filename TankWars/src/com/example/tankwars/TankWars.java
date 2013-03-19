@@ -65,12 +65,11 @@ public class TankWars extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     	//TODO Make intro menu, new game and buy item menus
-        //Create the first tank
-        playerOne = new Tank(100, true);
-        //Create the second tank
-        playerTwo = new Tank(400, false);
+        
         //Create the environment.
         theEnvironment = new Environment(this, 500, 300);
+        playerOne = theEnvironment.get_active_players().get(0).get_controlled_tank();
+        playerTwo = theEnvironment.get_active_players().get(1).get_controlled_tank();
         //Create sound interface.
         soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 100);
         soundPoolMap = new HashMap<Integer, Integer>();
