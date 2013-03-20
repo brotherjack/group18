@@ -22,21 +22,21 @@ import android.graphics.Bitmap;
 import android.graphics.RectF;
 
 public class Tank {
-    final double DEGREE_AMMOUNT = 1;
-    final double GRAVITY = 1;
+    final double DEGREE_AMMOUNT = 1.0;
+    final double GRAVITY = 1.0;
     public RectF rect = new RectF(0, 0, 0, 0);
     public boolean hasCollided = false;
     public boolean wasShot = false;
-    public int health;
-    private int positionx;
+    private int positionx; //TODO this probably should be changed to point
     private int positiony;
     private boolean rotateLeft;
-    private float bulletXPos;
+    private float bulletXPos; //TODO this probably should be changed to point
     private float bulletYPos;
     private double power;
     private float degrees;
-    public Locomotion locomotive_entity;
+    public Locomotion locomotive_entity; //TODO change to private?
     public Bitmap sprite;
+    public Armor armor;
     
     enum WEAPON{GUN};
     
@@ -48,10 +48,13 @@ public class Tank {
     public Tank(int position, boolean rotateLeft, Bitmap mySprite) {
         power = 100;
         degrees = 0;
-        health = 100;
+        
         this.rotateLeft = rotateLeft; //TODO change with Player owner
         this.positionx = position;
+        
         this.locomotive_entity = new Locomotion.Treads();
+        this.armor = new Armor.StandardArmor();
+        
         if (!this.rotateLeft) {
             rect.set(positionx+2, 128, positionx + 50, 150);
         }
@@ -184,13 +187,6 @@ public class Tank {
      */
     public boolean wasShot() {
         return this.wasShot;
-    }
-    
-    /**
-     * @return The tank's current health.
-     */
-    public int getHealth() {
-        return this.health;
     }
     
     public int[] getPosition(){ return new int[] {this.positionx, this.positiony}; }

@@ -63,8 +63,9 @@ public class Environment {
             paint.setAntiAlias(true);
             curr = Bitmap.createBitmap(screenWidth, screenHeight, conf);
             canvas = new Canvas(curr);
-            this.active_players = new ArrayList<HumanPlayer>();
-            this.initializeTanks();
+            //TODO next two lines need to be input from user, not hardcoded 
+            this.active_players = new ArrayList<HumanPlayer>(2); 
+            this.initializeTanks(2);
             this.refreshEnvironment();
             lScreenBorder = new RectF(0, 0, 1, 300);
             rScreenBorder = new RectF(499,0,500,300);
@@ -162,7 +163,7 @@ public class Environment {
         return false;
     }
     
-    private void initializeTanks() {
+    private void initializeTanks(int numberOfPlayers) {
     	Bitmap tankRight;
     	Bitmap tankLeft; //TODO Rename these, make for loop for initializing multiple tanks
         //This creates the right tank bitmap.

@@ -16,6 +16,7 @@ package com.example.tankwars;
 import java.util.HashMap;
 
 import com.amphibian.environment.Environment;
+import com.amphibian.tank.DamageType;
 import com.amphibian.tank.Tank;
 
 import android.annotation.SuppressLint;
@@ -91,8 +92,8 @@ public class TankWars extends Activity {
         rightTankHealthTextView.setTextSize(50);
         leftTankHeathTextView.setTextColor(Color.RED);
         rightTankHealthTextView.setTextColor(Color.RED);
-        leftTankHeathTextView.setText(Integer.toString(playerOne.getHealth()));
-        rightTankHealthTextView.setText(Integer.toString(playerTwo.getHealth()));
+        leftTankHeathTextView.setText(Integer.toString(playerOne.armor.getHPLeft()));
+        rightTankHealthTextView.setText(Integer.toString(playerTwo.armor.getHPLeft()));
         
         //Create all the directional image views.
         int ctr=0;
@@ -195,10 +196,10 @@ public class TankWars extends Activity {
      */
     private void drawEnvironment() {
         theEnvironment.refreshEnvironment();
-        theEnvironment.drawTank(playerOne);
+        theEnvironment.drawTank(playerOne); //TODO This needs to be a for loop, for multiple players
         theEnvironment.drawTank(playerTwo);
-        leftTankHeathTextView.setText(Integer.toString(playerOne.getHealth()));
-        rightTankHealthTextView.setText(Integer.toString(playerTwo.getHealth()));
+        leftTankHeathTextView.setText(Integer.toString(playerOne.armor.getHPLeft()));
+        rightTankHealthTextView.setText(Integer.toString(playerTwo.armor.getHPLeft()));
 //            theEnvironment.drawTankHitBox(playerOne);
 //            theEnvironment.drawTankHitBox(playerTwo);
     }
@@ -211,8 +212,9 @@ public class TankWars extends Activity {
     private void startMoveThread(final moveVal move, final Tank currPlayer,
             final Tank otherPlayer) {
     	//TODO Make for loop for checking player array for winner
+    	//TODO Determine winner from last tank remaining
         // Check if a player has won
-        if (playerOne.health == 0) {
+        if (playerOne.armor.getHPLeft() == 0) {
             Toast.makeText(getBaseContext(), "Player Two Wins",
                     Toast.LENGTH_LONG).show();
             new CountDownTimer(3000, 1) {
@@ -224,7 +226,7 @@ public class TankWars extends Activity {
             }.start();
 
         }
-        if (playerTwo.health == 0) {
+        if (playerTwo.armor.getHPLeft() == 0) {
             Toast.makeText(getBaseContext(), "Player One Wins",
                     Toast.LENGTH_LONG).show();
             new CountDownTimer(3000, 1) {
@@ -405,7 +407,7 @@ public class TankWars extends Activity {
                                 (AudioManager.STREAM_MUSIC)
                                 , 1, 0, 1f);
                         otherPlayer.wasShot = true;
-                        otherPlayer.health -= 10;
+                        otherPlayer.armor.takeDamage(10, DamageType.KINETIC);
                         break;
                     }
                     handler.post(new Runnable() {
