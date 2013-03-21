@@ -44,7 +44,8 @@ public class Environment {
     public RectF rScreenBorder = new RectF(0, 0, 0, 0);
     public RectF bulHitBox = new RectF(0, 0, 0, 0);
     private Bitmap curr;
-    private ArrayList<HumanPlayer> active_players; //TODO Should this be an array?
+    private ArrayList<HumanPlayer> humanPlayers; //TODO Should this be an array?
+    private ArrayList<AI_Player> computerPlayers;
     private Bitmap turretLeft;
     private Bitmap turretRight;
     private Bitmap bullet;
@@ -64,14 +65,17 @@ public class Environment {
             curr = Bitmap.createBitmap(screenWidth, screenHeight, conf);
             canvas = new Canvas(curr);
             //TODO next two lines need to be input from user, not hardcoded 
-            this.active_players = new ArrayList<HumanPlayer>(2); 
+            this.humanPlayers = new ArrayList<HumanPlayer>(2);
+            this.computerPlayers = null;
             this.initializeTanks(2);
             this.refreshEnvironment();
             lScreenBorder = new RectF(0, 0, 1, 300);
             rScreenBorder = new RectF(499,0,500,300);
         }
     
-    public ArrayList<HumanPlayer> get_active_players() { return this.active_players; }
+    public ArrayList<HumanPlayer> getActiveHumanPlayers() { return this.humanPlayers; }
+    
+    public ArrayList<AI_Player> getActiveComputerPlayers() { return this.computerPlayers; }
     
     /**
      * Ensures the tank is able to move. 
@@ -94,7 +98,8 @@ public class Environment {
         else if (activeTank.hasCollided()) {    // Collision detected try to move away.
             
             if (goingRight) {
-            	for(HumanPlayer otherPlayer : this.active_players){
+            	for(HumanPlayer otherPlayer : this.humanPlayers){
+            		
             		Tank otherTank = otherPlayer.get_controlled_tank();
 	                activeTank.rect.set((float) (activeTank.rect.left + TANK_SPEED),
 	                        activeTank.rect.top,
@@ -128,7 +133,7 @@ public class Environment {
             }
             
             else if (!goingRight) {
-            	for(HumanPlayer otherPlayer : this.active_players){
+            	for(HumanPlayer otherPlayer : this.humanPlayers){
             		Tank otherTank = otherPlayer.get_controlled_tank();
 	                activeTank.rect.set((float) (activeTank.rect.left - TANK_SPEED),
 	                        activeTank.rect.top,
@@ -204,8 +209,8 @@ public class Environment {
     	HumanPlayer playerTwo = new HumanPlayer(0, tankTwo, "Rommel");
     	
     	//Add all players to list of active players        
-        this.active_players.add(playerOne); //TODO change as part of initialize multiple tank for loop
-        this.active_players.add(playerTwo);
+        this.humanPlayers.add(playerOne); //TODO change as part of initialize multiple tank for loop
+        this.humanPlayers.add(playerTwo);
     }
     
     public void refreshEnvironment() {
@@ -239,7 +244,7 @@ public class Environment {
         }
     }
     
-    public void drawTankHitBox(Tank aTank) {
+    public void drawTankHitBox(Tank aTank) { //TODO Should tank drawing fn be in Tank?
         paint.setColor(Color.RED);
         canvas.drawRect(aTank.rect, paint);
     }
@@ -259,6 +264,14 @@ public class Environment {
         paint.setColor(Color.BLACK);
         canvas.drawCircle(xPos, yPos, 5, paint);
 //        drawBulletHitBox();
+    }
+    
+    public void removeHumanPlayer(HumanPlayer deadman){
+    	this.humanPlayers.remove(deadman);
+    }
+    
+    public void removeComputerPlayer(AI_Player deadman){
+    	this.computerPlayers.remove(deadman);
     }
     
     public void placeTanks(){

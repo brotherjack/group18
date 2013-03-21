@@ -11,8 +11,8 @@ public abstract class Player {
 	protected int cash;
 	protected int rounds_won;
 	protected Tank controlled_tank;
-	protected ArrayList<? super Armor> armor_inventory;
-	protected ArrayList<? super Armament> weapon_inventory;
+	protected ArrayList<? super Armor> armor_inventory; //TODO fix with HashMap<WeaponType, Integer>
+	protected ArrayList<? super Armament> weapon_inventory; //TODO this too
 	
 	public String get_name(){ return this.name; }
 	public void win_cash(int amount) { this.cash += amount; }
@@ -22,4 +22,6 @@ public abstract class Player {
 		this.controlled_tank = tank;
 	}
 	public Tank get_controlled_tank() { return this.controlled_tank; }
+	
+	public abstract boolean getSentience(); 
 }

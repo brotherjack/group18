@@ -13,10 +13,10 @@ public abstract class Armor {
 		this.damage += damageadd;
 		//TODO add code that takes into account resistance
 		if(this.damage >= this.hit_points){
-			return TankCondition.destroyed; //TODO add code to initiate tank destruction
+			return TankCondition.DESTROYED; //TODO add code to initiate tank destruction
 		}
 		else{
-			return TankCondition.operational;
+			return TankCondition.OPERATIONAL;
 		}
 	}
 	
@@ -36,6 +36,6 @@ public abstract class Armor {
 		
 		public int getHPLeft(){
 			return this.hit_points - this.damage;
-		}
+		}		
 	}
 }

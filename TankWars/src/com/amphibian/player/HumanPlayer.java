@@ -1,14 +1,13 @@
 package com.amphibian.player;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import com.amphibian.tank.Tank;
 import com.amphibian.tank.Armament;
 import com.amphibian.tank.Shell;
 import com.amphibian.tank.Armor;
 
-public final class HumanPlayer extends Player {
+public final class HumanPlayer extends Player {  
 	public HumanPlayer(int myCash, Tank myTank, String myName){
 		this.cash = myCash;
 		this.controlled_tank = myTank;
@@ -22,4 +21,7 @@ public final class HumanPlayer extends Player {
 	}
 	
 	public Tank get_controlled_tank() { return this.controlled_tank; }
+
+	@Override
+	public boolean getSentience() { return true; }
 }

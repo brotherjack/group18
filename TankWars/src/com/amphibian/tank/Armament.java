@@ -7,7 +7,6 @@ public abstract class Armament {
 	protected int damage;
 	protected double effect_radius;
 	
-	protected void on_detonate(){
-	
-	}
+	protected abstract void on_detonate();
+	protected abstract Accessory.Weapons getWeaponType();
 }

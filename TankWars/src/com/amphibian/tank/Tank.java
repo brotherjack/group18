@@ -22,8 +22,8 @@ import android.graphics.Bitmap;
 import android.graphics.RectF;
 
 public class Tank {
-    final double DEGREE_AMMOUNT = 1.0;
-    final double GRAVITY = 1.0;
+    final double DEGREE_AMMOUNT = 1.0; //TODO this should probably be Turret
+    final double GRAVITY = 1.0; //TODO this should not be here (certainly in environment)
     public RectF rect = new RectF(0, 0, 0, 0);
     public boolean hasCollided = false;
     public boolean wasShot = false;
@@ -35,8 +35,9 @@ public class Tank {
     private double power;
     private float degrees;
     public Locomotion locomotive_entity; //TODO change to private?
-    public Bitmap sprite;
+    public Bitmap sprite; //TODO should make private
     public Armor armor;
+    public Turret turret;
     
     enum WEAPON{GUN};
     
@@ -54,6 +55,7 @@ public class Tank {
         
         this.locomotive_entity = new Locomotion.Treads();
         this.armor = new Armor.StandardArmor();
+        this.turret = new Turret.Standard_Turret(Accessory.Weapons.STANDARD_SHELL);
         
         if (!this.rotateLeft) {
             rect.set(positionx+2, 128, positionx + 50, 150);
@@ -63,6 +65,11 @@ public class Tank {
         }
         
         this.sprite = mySprite;
+    }
+    
+    public TankCondition strikeTank(int dmgAmmount, DamageType dmgType){
+    	TankCondition tankStatus = this.armor.takeDamage(dmgAmmount, dmgType);
+    	return tankStatus;
     }
     
     /**
@@ -185,7 +192,7 @@ public class Tank {
     /**
      * @return True if the tank was shot
      */
-    public boolean wasShot() {
+    public boolean wasShot() { //TODO probably need to delete this
         return this.wasShot;
     }
     

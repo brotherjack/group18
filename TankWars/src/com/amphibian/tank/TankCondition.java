@@ -1,5 +1,5 @@
 package com.amphibian.tank;
 
 public enum TankCondition {
-	operational, destroyed;
+	OPERATIONAL, DESTROYED, ARMOR_BROKEN; //TODO Implement ARMOR_BROKEN
 }
