@@ -22,7 +22,6 @@ import android.graphics.Bitmap;
 import android.graphics.RectF;
 
 public class Tank {
-    final double DEGREE_AMMOUNT = 1.0; //TODO this should probably be Turret
     final double GRAVITY = 1.0; //TODO this should not be here (certainly in environment)
     public RectF rect = new RectF(0, 0, 0, 0);
     public boolean hasCollided = false;
@@ -30,10 +29,6 @@ public class Tank {
     private int positionx; //TODO this probably should be changed to point
     private int positiony;
     private boolean rotateLeft;
-    private float bulletXPos; //TODO this probably should be changed to point
-    private float bulletYPos;
-    private double power;
-    private float degrees;
     public Locomotion locomotive_entity; //TODO change to private?
     public Bitmap sprite; //TODO should make private
     public Armor armor;
@@ -47,15 +42,13 @@ public class Tank {
      * @param rotateLeft
      */
     public Tank(int position, boolean rotateLeft, Bitmap mySprite) {
-        power = 100;
-        degrees = 0;
         
         this.rotateLeft = rotateLeft; //TODO change with Player owner
         this.positionx = position;
         
         this.locomotive_entity = new Locomotion.Treads();
         this.armor = new Armor.StandardArmor();
-        this.turret = new Turret.Standard_Turret(Accessory.Weapons.STANDARD_SHELL);
+        this.turret = new Turret.Standard_Turret(new Shell.Standard_Shell());
         
         if (!this.rotateLeft) {
             rect.set(positionx+2, 128, positionx + 50, 150);
@@ -70,43 +63,6 @@ public class Tank {
     public TankCondition strikeTank(int dmgAmmount, DamageType dmgType){
     	TankCondition tankStatus = this.armor.takeDamage(dmgAmmount, dmgType);
     	return tankStatus;
-    }
-    
-    /**
-     * @param t
-     * @return Returns the bullets X positions when time t is input.
-     */
-    public float getBulletX(double t) { 	
-        if(rotateLeft)
-            return (float)(bulletXPos + power / 40 *
-                    Math.cos(Math.toRadians(degrees)) * t);
-        else
-            return (float)(float)(bulletXPos - power / 40 *
-                    Math.cos(Math.toRadians(degrees)) * t);
-    }
-    
-    /**
-     * @param t Time
-     * @return returns the bullets y position.
-     */
-    public float getBulletY(double t) {
-        float yPos = (float) (bulletYPos-power / 40 *
-                Math.sin(Math.toRadians(degrees)) * t + GRAVITY / 100 * t * t);
-        return yPos;
-    }
-    
-    /**
-     * This sets the initial bullet position of the tanks.
-     * @param xPos
-     * @param yPos
-     */
-    public void setBulletPos(float xPos, float yPos) {
-        bulletXPos = xPos;
-        bulletYPos = yPos;
-        if(bulletXPos < 0)
-            bulletXPos = 0;
-        if(bulletYPos < 0)
-            bulletYPos = 0;
     }
     
     /**
@@ -141,37 +97,18 @@ public class Tank {
 	        }
     	}
     }
-    
-    
-    /**
-     * Moves the tank's turret.
-     * @param isUp
-     */
-    public void turret_move(boolean isUp) {
-        if(isUp && degrees <= (90 - DEGREE_AMMOUNT))
-            degrees += DEGREE_AMMOUNT;
-        else if(!isUp && degrees >= 0 + DEGREE_AMMOUNT)
-            degrees -= DEGREE_AMMOUNT;
-    }
-    
-    /**
-     * @return Returns the degrees of the turret.
-     */
-    public float getDegrees() {
-        return degrees;
-    }
-    
+ 
     /**
      * @return Returns the tank's x position.
      */
-    public float getX() {
+    public float getPosX() {
         return positionx;
     }
     
     /**
      * @return Returns the tank's y position.
      */
-    public float getY() {
+    public float getPosY() {
         return positiony;
     }
     

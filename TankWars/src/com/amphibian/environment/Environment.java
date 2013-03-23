@@ -15,8 +15,10 @@
 package com.amphibian.environment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.amphibian.player.*;
+import com.amphibian.tank.Armament;
 import com.amphibian.tank.Tank;
 import com.example.tankwars.Bitmaps;
 import com.example.tankwars.R;
@@ -29,6 +31,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.DisplayMetrics;
 
@@ -39,13 +42,17 @@ public class Environment {
     final int tankHeight = 25;
     final int SCREEN_MAX = 500;
     final int SCREEN_MIN = 0;
+    public static double GRAVITY = 1.0;
     final Bitmap.Config conf = Bitmap.Config.ARGB_8888;
     public RectF lScreenBorder = new RectF(0, 0, 0, 0);
     public RectF rScreenBorder = new RectF(0, 0, 0, 0);
-    public RectF bulHitBox = new RectF(0, 0, 0, 0);
     private Bitmap curr;
     private ArrayList<HumanPlayer> humanPlayers; //TODO Should this be an array?
     private ArrayList<AI_Player> computerPlayers;
+    //TODO weaponInPlay with this: replace private HashMap<Armament<?>, Point> weaponsInPlay; 
+    public static Armament<?> weaponInPlay; //TODO might need latter, may not need, if latter erase
+    public static double timeInFlight; //TODO make private?
+    public static boolean isShotRight;
     private Bitmap turretLeft;
     private Bitmap turretRight;
     private Bitmap bullet;
@@ -71,7 +78,10 @@ public class Environment {
             this.refreshEnvironment();
             lScreenBorder = new RectF(0, 0, 1, 300);
             rScreenBorder = new RectF(499,0,500,300);
+            Environment.timeInFlight = 0;
         }
+    
+    public Armament<?> getWeaponInPlay(){ return Environment.weaponInPlay; }
     
     public ArrayList<HumanPlayer> getActiveHumanPlayers() { return this.humanPlayers; }
     
@@ -221,7 +231,7 @@ public class Environment {
     }
     
     public void drawTank(Tank aTank) {
-    	canvas.drawBitmap(aTank.sprite, aTank.getX(), 150 - tankHeight, paint);
+    	canvas.drawBitmap(aTank.sprite, aTank.getPosX(), 150 - tankHeight, paint);
         drawTurret(aTank);
     }
     
@@ -229,16 +239,16 @@ public class Environment {
         Matrix matrix = new Matrix();
     
         if(aTank.getRotate()) {
-            float xPos = aTank.getX() + aTank.sprite.getWidth() - 20;
+            float xPos = aTank.getPosX() + aTank.sprite.getWidth() - 20;
             float yPos = (float) (150 - .75 * tankHeight);
-            matrix.setRotate(-aTank.getDegrees(), 0, 0);
+            matrix.setRotate(-aTank.turret.getAngle(), 0, 0);
             matrix.postTranslate(xPos, yPos);
             canvas.drawBitmap(turretLeft, matrix, paint);
         }
         else {
-            float xPos = aTank.getX() - 5;
+            float xPos = aTank.getPosX() - 5;
             float yPos = (float) (150 - .75 *tankHeight);
-            matrix.setRotate(aTank.getDegrees(), turretRight.getWidth(), 0);
+            matrix.setRotate(aTank.turret.getAngle(), turretRight.getWidth(), 0);
             matrix.postTranslate(xPos, yPos);
             canvas.drawBitmap(turretRight, matrix, paint);
         }
@@ -251,7 +261,7 @@ public class Environment {
     
     public void drawBulletHitBox() {
         paint.setColor(Color.RED);
-        canvas.drawRect(bulHitBox, paint);
+        canvas.drawRect(weaponInPlay.bulHitBox, paint);
     }
     
     public Bitmap getBitmap() {
@@ -259,9 +269,11 @@ public class Environment {
     }
     
     public void drawBullet(float xPos, float yPos) {
-        bulHitBox.set(xPos - 5, yPos + 5, xPos + 5, yPos - 5);
+    	
+    	weaponInPlay.bulHitBox.set(xPos - 5, yPos + 5, xPos + 5, yPos - 5);
 //        canvas.drawBitmap(bullet, xPos, yPos, paint);
         paint.setColor(Color.BLACK);
+        
         canvas.drawCircle(xPos, yPos, 5, paint);
 //        drawBulletHitBox();
     }

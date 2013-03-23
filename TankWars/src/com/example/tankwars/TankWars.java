@@ -19,6 +19,7 @@ import com.amphibian.environment.Environment;
 import com.amphibian.player.AI_Player;
 import com.amphibian.player.HumanPlayer;
 import com.amphibian.player.Player;
+import com.amphibian.tank.Armament;
 import com.amphibian.tank.DamageType;
 import com.amphibian.tank.Tank;
 import com.amphibian.tank.TankCondition;
@@ -27,6 +28,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
@@ -50,7 +52,7 @@ public class TankWars extends Activity {
     private Tank tankOne;
     private Tank tankTwo; 
     private boolean playerOneActive = true; //TODO remove, when ready for multiplayer
-    private ImageView Environment;
+    private ImageView igEnvironment;
     private ImageView Directions[] = new ImageView[5];
     private boolean deleteThreadRunning = false;
     private boolean pause=false;
@@ -90,7 +92,7 @@ public class TankWars extends Activity {
         setContentView(R.layout.activity_tank_game_main);
         
         //Set the environment to the imageview
-        Environment = (ImageView)findViewById(R.id.Environment);
+        igEnvironment = (ImageView)findViewById(R.id.Environment);
         
         //Set the text views for health display 
         //includes setting size and color.
@@ -123,12 +125,12 @@ public class TankWars extends Activity {
         Directions[ctr++].setOnTouchListener(move(moveVal.fire));
         
         //Set the image bitmap.
-        Environment.setImageBitmap(theEnvironment.getBitmap());
+        igEnvironment.setImageBitmap(theEnvironment.getBitmap());
 
         //Draw the environment
         drawEnvironment();
         //Update the screen.
-        Environment.invalidate();
+        igEnvironment.invalidate();
     }
 
     /**
@@ -169,7 +171,7 @@ public class TankWars extends Activity {
                     /**
                      * This starts the item, 
                      * move references the button they pressed.
-                     */
+                     */    
                     startMoving(move);
                     return true;
                 case MotionEvent.ACTION_UP:
@@ -305,7 +307,7 @@ public class TankWars extends Activity {
                                 }
                                 currPlayer.move_tank(true, theEnvironment);
                                 drawEnvironment();
-                                Environment.invalidate();
+                                igEnvironment.invalidate();
                                 break;
                                 //This moves the player left.
                             case moveLeft:
@@ -337,19 +339,19 @@ public class TankWars extends Activity {
                                 }
                                 currPlayer.move_tank(false, theEnvironment);
                                 drawEnvironment();
-                                Environment.invalidate();
+                                igEnvironment.invalidate();
                                 break;
                                 //This moves the turret down.
                             case turrDown:
-                                currPlayer.turret_move(false);
+                                currPlayer.turret.turret_move(false);
                                 drawEnvironment();
-                                Environment.invalidate();
+                                igEnvironment.invalidate();
                                 break;
                                 //This moves the turret up.
                             case turrUp:
-                                currPlayer.turret_move(true);
+                                currPlayer.turret.turret_move(true);
                                 drawEnvironment();
-                                Environment.invalidate();
+                                igEnvironment.invalidate();
                                 break;
                                 //This fires the turret.
                             case fire:
@@ -389,31 +391,21 @@ public class TankWars extends Activity {
     //Ensure no other buttons can be pressed.
     pause = true;
     
-    //Gets the bullets position.
-    if(Player.getRotate())
-        Player.setBulletPos(
-                (float) (Player.getX() + 28 + 28 * Math.cos(
-                            Math.toRadians(Player.getDegrees()))), 
-                (float) (130 + 28 * Math.sin(
-                            Math.toRadians(-Player.getDegrees()))));
-    else
-        Player.setBulletPos(
-                (float) (Player.getX() + 16 - 28 * Math.cos(
-                        Math.toRadians(Player.getDegrees()))),
-                (float) (130 + 28 * Math.sin(
-                        Math.toRadians(-Player.getDegrees()))));
-
+    Environment.isShotRight = Player.getRotate();
+    Environment.weaponInPlay = Player.turret.fire(Environment.isShotRight, Player.getPosX());
+    
     //This starts a thread
     Thread thread =  new Thread() {
         @Override
         public void run() {
             try {
-                double t = 0;
-                while(Player.getBulletY(t) < 150 - 1 / 7)
+                Environment.timeInFlight = 0.0;
+                
+                while(Environment.weaponInPlay.getBulletY(Environment.timeInFlight, Environment.GRAVITY) < 150 - 1 / 7)
                 {
-                    final double fin = t;
+                    final double fin = Environment.timeInFlight; 
                     // Check if shot hit other tank
-                    if (theEnvironment.bulHitBox.
+                    if (Environment.weaponInPlay.bulHitBox.
                             intersect(otherPlayer.getRect())) {
                         //Player hit, decrease health and play sound
                         audioManager = (AudioManager)getSystemService
@@ -435,16 +427,18 @@ public class TankWars extends Activity {
                         @Override
                         public void run() {
                             drawEnvironment();
-                            theEnvironment.drawBullet(Player.getBulletX(fin),
-                                                      Player.getBulletY(fin));
-                            Environment.invalidate();
+                            float xPos = Environment.weaponInPlay.getBulletX(fin, Environment.isShotRight);
+                            float yPos = Environment.weaponInPlay.getBulletY(fin, Environment.GRAVITY);
+                        
+                            theEnvironment.drawBullet(xPos, yPos);
+                            igEnvironment.invalidate();
                         }
                     });
                     
                     try {
                         //Sleep for 25 ms giving 40 fps (1000/40) = 25.
                         Thread.sleep(15);
-                        t += 1;
+                        Environment.timeInFlight += 1;
                     }
                     catch (InterruptedException e) {
                     }
