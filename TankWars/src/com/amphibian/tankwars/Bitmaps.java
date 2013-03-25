@@ -12,7 +12,7 @@
  * Description: Bitmap class for resizing images and other useful functions.
  * In Progress: 
  */
-package com.example.tankwars;
+package com.amphibian.tankwars;
 
 import android.graphics.Bitmap;
 import android.util.FloatMath;

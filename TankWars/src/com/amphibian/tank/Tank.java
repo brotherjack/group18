@@ -16,6 +16,8 @@
  */
 package com.amphibian.tank;
 
+import java.util.HashMap;
+
 import com.amphibian.environment.Environment;
 
 import android.graphics.Bitmap;
@@ -60,8 +62,9 @@ public class Tank {
         this.sprite = mySprite;
     }
     
-    public TankCondition strikeTank(int dmgAmmount, DamageType dmgType){
-    	TankCondition tankStatus = this.armor.takeDamage(dmgAmmount, dmgType);
+    public TankCondition strikeTank(Armament weapon){
+    	DamageTuple dmg = weapon.directHit();
+    	TankCondition tankStatus = this.armor.takeDamage(dmg.dmg, dmg.type);
     	return tankStatus;
     }
     

@@ -11,7 +11,7 @@
  * Mar 13, 2013
  * Description: Tank wars application activity. Creates/runs everything seen.
  */
-package com.example.tankwars;
+package com.amphibian.tankwars;
 
 import java.util.HashMap;
 
@@ -23,6 +23,7 @@ import com.amphibian.tank.Armament;
 import com.amphibian.tank.DamageType;
 import com.amphibian.tank.Tank;
 import com.amphibian.tank.TankCondition;
+import com.amphibian.tankwars.R;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -258,7 +259,7 @@ public class TankWars extends Activity {
         switch(move){
         case fire:
             //Fires the bullet.
-            fireBullet(currPlayer, otherPlayer);
+            fireBullet(currPlayer);
             //Switches the active player
             playerOneActive = (!playerOneActive);
             break;
@@ -386,7 +387,7 @@ public class TankWars extends Activity {
      * This fires the bullet from players position.
      * @param Player
      */
-    private void fireBullet(final Tank Player, final Tank otherPlayer) {
+    private void fireBullet(final Tank Player) {
     //TODO rename to "fire", move to turret, and remove arguments	
     //Ensure no other buttons can be pressed.
     pause = true;
@@ -403,25 +404,32 @@ public class TankWars extends Activity {
                 
                 while(Environment.weaponInPlay.getBulletY(Environment.timeInFlight, Environment.GRAVITY) < 150 - 1 / 7)
                 {
-                    final double fin = Environment.timeInFlight; 
-                    // Check if shot hit other tank
-                    if (Environment.weaponInPlay.bulHitBox.
-                            intersect(otherPlayer.getRect())) {
-                        //Player hit, decrease health and play sound
-                        audioManager = (AudioManager)getSystemService
-                                (Context.AUDIO_SERVICE);
-                        soundPool.play(soundID, audioManager.getStreamVolume
-                                (AudioManager.STREAM_MUSIC)
-                                , audioManager.getStreamVolume
-                                (AudioManager.STREAM_MUSIC)
-                                , 1, 0, 1f);
-                        otherPlayer.wasShot = true;
-                        //TODO need to change next line for armament damage and tank destruction
-                        TankCondition otherTankStatus = otherPlayer.strikeTank(10, DamageType.KINETIC);
-                        if(otherTankStatus == TankCondition.DESTROYED){
-                        	//TANK GO BOOM
-                        }
-                        break;
+                	final double fin = Environment.timeInFlight;
+                	for(Player player : Environment.humanPlayers){ 
+                		Tank otherTank = player.get_controlled_tank();
+                		if(otherTank.equals(Player)) continue;
+	                    // Check if shot hit other tank
+	                    if (Environment.weaponInPlay.bulHitBox.
+	                            intersect(otherTank.getRect())) {
+	                        //Player hit, decrease health and play sound
+	                        audioManager = (AudioManager)getSystemService
+	                                (Context.AUDIO_SERVICE);
+	                        soundPool.play(soundID, audioManager.getStreamVolume
+	                                (AudioManager.STREAM_MUSIC)
+	                                , audioManager.getStreamVolume
+	                                (AudioManager.STREAM_MUSIC)
+	                                , 1, 0, 1f);
+	                        otherTank.wasShot = true;
+	                        //TODO need to change next line for armament damage and tank destruction
+	                        TankCondition otherTankStatus = 
+	                        		otherTank.strikeTank(Environment.weaponInPlay);
+	                        if(otherTankStatus == TankCondition.DESTROYED){
+	                        	//TODO MAKE GRAPHFIX FOR SPLOSION!
+	                        	//TODO MAKE BOOM BOOM SOUND maybe also BLOOD SPLATTER
+	                        	theEnvironment.humanPlayers.remove(otherTank);
+	                        }
+	                        return;
+	                    }
                     }
                     handler.post(new Runnable() {
                         @Override

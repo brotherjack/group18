@@ -25,8 +25,8 @@ public abstract class Armor {
 	}
 	
 	public static class StandardArmor extends Armor{
-		protected final int hit_points = 100;
 		public StandardArmor(){
+			this.hit_points = 100;
 			this.damage = 0;
 			this.resist_ballistic = 0.0;
 			this.resist_explosive = 0.0;

@@ -15,14 +15,12 @@
 package com.amphibian.environment;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.amphibian.player.*;
 import com.amphibian.tank.Armament;
 import com.amphibian.tank.Tank;
-import com.example.tankwars.Bitmaps;
-import com.example.tankwars.R;
-import com.example.tankwars.R.drawable;
+import com.amphibian.tankwars.Bitmaps;
+import com.amphibian.tankwars.R;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -31,7 +29,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.DisplayMetrics;
 
@@ -47,7 +44,7 @@ public class Environment {
     public RectF lScreenBorder = new RectF(0, 0, 0, 0);
     public RectF rScreenBorder = new RectF(0, 0, 0, 0);
     private Bitmap curr;
-    private ArrayList<HumanPlayer> humanPlayers; //TODO Should this be an array?
+    public static ArrayList<HumanPlayer> humanPlayers; //TODO Should this be an array?
     private ArrayList<AI_Player> computerPlayers;
     //TODO weaponInPlay with this: replace private HashMap<Armament<?>, Point> weaponsInPlay; 
     public static Armament<?> weaponInPlay; //TODO might need latter, may not need, if latter erase

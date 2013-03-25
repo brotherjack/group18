@@ -5,15 +5,19 @@ import android.graphics.RectF;
 
 public abstract class Armament<T> {
 	protected Bitmap sprite;
-	protected int damage;
-	protected double effect_radius;
+	private double effect_radius;
 	protected float projectileXPos; 
     protected float projectileYPos;
     public RectF bulHitBox = new RectF(0, 0, 0, 0);
     protected int power = 100;
     protected int angle;
+    private int directDamage;
+    private int secondaryDamage;
+    private DamageType directDmgType;
+    private DamageType secondaryDmgType;
 	
 	protected abstract void on_detonate();
+	protected abstract DamageTuple directHit();
 	
 	private T type;          
 
@@ -59,5 +63,13 @@ public abstract class Armament<T> {
             projectileXPos = 0;
         if(projectileYPos < 0)
             projectileYPos = 0;
-    };
+    }
+
+	public double getEffect_radius() {
+		return effect_radius;
+	}
+
+	public void setEffect_radius(double effect_radius) {
+		this.effect_radius = effect_radius;
+	}
 }
