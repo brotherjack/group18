@@ -23,5 +23,10 @@ public abstract class Player {
 	}
 	public Tank get_controlled_tank() { return this.controlled_tank; }
 	
-	public abstract boolean getSentience(); 
+	public void winRound(){
+		this.rounds_won += 1;
+		this.cash += 2000;
+	}
+	
+	public abstract boolean getSentience();
 }

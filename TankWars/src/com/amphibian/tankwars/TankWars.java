@@ -233,8 +233,12 @@ public class TankWars extends Activity {
     	//TODO Make for loop for checking player array for winner
     	//TODO Determine winner from last tank remaining
         // Check if a player has won
-        if (tankOne.armor.getHPLeft() == 0) {
-            Toast.makeText(getBaseContext(), "Player Two Wins",
+    	
+    	if(theEnvironment.humanPlayers.size() == 1){
+    		HumanPlayer lastManStanding = theEnvironment.humanPlayers.get(0);
+    		lastManStanding.winRound();
+    		
+    		Toast.makeText(getBaseContext(), lastManStanding.get_name() + " wins!",
                     Toast.LENGTH_LONG).show();
             new CountDownTimer(3000, 1) {
                 public void onTick(long millisUntilFinished) {
@@ -242,19 +246,7 @@ public class TankWars extends Activity {
             public void onFinish() {
                 System.exit(0);
             }
-            }.start();
-
-        }
-        if (tankTwo.armor.getHPLeft() == 0) {
-            Toast.makeText(getBaseContext(), "Player One Wins",
-                    Toast.LENGTH_LONG).show();
-            new CountDownTimer(3000, 1) {
-                public void onTick(long millisUntilFinished) {
-            }
-            public void onFinish() {
-                System.exit(0);
-            }
-            }.start();
+            }.start();    	
         }
         switch(move){
         case fire:
@@ -405,8 +397,8 @@ public class TankWars extends Activity {
                 while(Environment.weaponInPlay.getBulletY(Environment.timeInFlight, Environment.GRAVITY) < 150 - 1 / 7)
                 {
                 	final double fin = Environment.timeInFlight;
-                	for(Player player : Environment.humanPlayers){ 
-                		Tank otherTank = player.get_controlled_tank();
+                	for(Player otherPlayer : Environment.humanPlayers){ 
+                		Tank otherTank = otherPlayer.get_controlled_tank();
                 		if(otherTank.equals(Player)) continue;
 	                    // Check if shot hit other tank
 	                    if (Environment.weaponInPlay.bulHitBox.
@@ -426,7 +418,7 @@ public class TankWars extends Activity {
 	                        if(otherTankStatus == TankCondition.DESTROYED){
 	                        	//TODO MAKE GRAPHFIX FOR SPLOSION!
 	                        	//TODO MAKE BOOM BOOM SOUND maybe also BLOOD SPLATTER
-	                        	theEnvironment.humanPlayers.remove(otherTank);
+	                        	theEnvironment.humanPlayers.remove(otherPlayer);
 	                        }
 	                        return;
 	                    }

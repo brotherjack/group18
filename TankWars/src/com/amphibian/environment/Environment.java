@@ -46,8 +46,7 @@ public class Environment {
     private Bitmap curr;
     public static ArrayList<HumanPlayer> humanPlayers; //TODO Should this be an array?
     private ArrayList<AI_Player> computerPlayers;
-    //TODO weaponInPlay with this: replace private HashMap<Armament<?>, Point> weaponsInPlay; 
-    public static Armament<?> weaponInPlay; //TODO might need latter, may not need, if latter erase
+    public static Armament<?> weaponInPlay; 
     public static double timeInFlight; //TODO make private?
     public static boolean isShotRight;
     private Bitmap turretLeft;

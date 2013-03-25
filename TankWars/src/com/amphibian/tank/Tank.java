@@ -16,8 +16,6 @@
  */
 package com.amphibian.tank;
 
-import java.util.HashMap;
-
 import com.amphibian.environment.Environment;
 
 import android.graphics.Bitmap;
