@@ -33,7 +33,8 @@ public class Tank {
     public Bitmap sprite; //TODO should make private
     public Armor armor;
     public Turret turret;
-    
+    private collide borderCollidedWith;
+    public enum collide{LEFT, RIGHT, NONE};
     enum WEAPON{GUN};
     
     /**
@@ -49,6 +50,7 @@ public class Tank {
         this.locomotive_entity = new Locomotion.Treads();
         this.armor = new Armor.StandardArmor();
         this.turret = new Turret.Standard_Turret(new Shell.Standard_Shell());
+        this.borderCollidedWith = collide.NONE;
         
         if (!this.rotateLeft) {
             rect.set(positionx+2, 128, positionx + 50, 150);
@@ -82,7 +84,7 @@ public class Tank {
      * @param isRight
      * @param world
      */
-    public void move_tank(boolean isRight, Environment world) {
+    public void move_tank(boolean isRight) {
     	if(this.locomotive_entity != null){
 	    	if (!this.rotateLeft) {
 	            rect.set(positionx+2, 128, positionx + 50, 150);
@@ -90,10 +92,10 @@ public class Tank {
 	        else {
 	            rect.set(positionx, 128, positionx + 48, 150);
 	        }
-	        if(isRight && world.canMove(this, isRight)) {
+	        if(isRight) {
 	            positionx += this.locomotive_entity.speed;
 	        }
-	        else if(!isRight && world.canMove(this, isRight)) {
+	        else if(!isRight) {
 	            positionx -= this.locomotive_entity.speed;
 	        }
     	}
@@ -102,14 +104,14 @@ public class Tank {
     /**
      * @return Returns the tank's x position.
      */
-    public float getPosX() {
+    public int getPosX() {
         return positionx;
     }
     
     /**
      * @return Returns the tank's y position.
      */
-    public float getPosY() {
+    public int getPosY() {
         return positiony;
     }
     
@@ -135,4 +137,13 @@ public class Tank {
     }
     
     public int[] getPosition(){ return new int[] {this.positionx, this.positiony}; }
+    
+    public void setPosition(int x, int y) {
+    	this.positionx = x;
+    	this.positiony = y;
+    }
+    
+    public collide getBorderCollidedWith(){
+    	return this.borderCollidedWith;
+    }
 }

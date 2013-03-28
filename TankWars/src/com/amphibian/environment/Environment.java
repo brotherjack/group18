@@ -15,6 +15,8 @@
 package com.amphibian.environment;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 import com.amphibian.player.*;
 import com.amphibian.tank.Armament;
@@ -68,112 +70,70 @@ public class Environment {
             curr = Bitmap.createBitmap(screenWidth, screenHeight, conf);
             canvas = new Canvas(curr);
             //TODO next two lines need to be input from user, not hardcoded 
-            this.humanPlayers = new ArrayList<HumanPlayer>(2);
+            humanPlayers = new ArrayList<HumanPlayer>(2);
             this.computerPlayers = null;
             this.initializeTanks(2);
+            this.shufflePlayers(); //Must follow initializeTanks
             this.refreshEnvironment();
             lScreenBorder = new RectF(0, 0, 1, 300);
             rScreenBorder = new RectF(499,0,500,300);
             Environment.timeInFlight = 0;
         }
     
+    /**
+     * Randomly shuffles the order players take turns in.
+     * @author Thomas Adriaan Hellinger
+     */
+    private void shufflePlayers() {
+    	long seed = System.nanoTime();
+    	Collections.shuffle(humanPlayers, new Random(seed));
+    }
+    
     public Armament<?> getWeaponInPlay(){ return Environment.weaponInPlay; }
     
-    public ArrayList<HumanPlayer> getActiveHumanPlayers() { return this.humanPlayers; }
+    public ArrayList<HumanPlayer> getActiveHumanPlayers() { return humanPlayers; }
     
     public ArrayList<AI_Player> getActiveComputerPlayers() { return this.computerPlayers; }
     
     /**
-     * Ensures the tank is able to move. 
-     * Takes in the direction to move and the move amount.
-     * @param moveAmmount
+     * @author Thomas Adriaan Hellinger
+     * @param currentPlayer
+     * @param activeTank
      * @param isRight
-     * @return true if tank can move, false otherwise.
+     * @return
      */
-    public boolean canMove(Tank activeTank, boolean goingRight) {
-        RectF lScreenBorder = new RectF(0, 0, 0, 300);
-        RectF rScreenBorder = new RectF(500,0,500,300);
-        final int TANK_SPEED = activeTank.locomotive_entity.getSpeed();
-        if (!activeTank.hasCollided) {    // Collision not detected
-            if(goingRight)
-                return (activeTank.getPosition()[0] + TANK_SPEED < SCREEN_MAX);
-            else
-                return (activeTank.getPosition()[0] - TANK_SPEED > SCREEN_MIN);
-        }
-        
-        else if (activeTank.hasCollided()) {    // Collision detected try to move away.
-            
-            if (goingRight) {
-            	for(HumanPlayer otherPlayer : this.humanPlayers){
-            		
-            		Tank otherTank = otherPlayer.get_controlled_tank();
-	                activeTank.rect.set((float) (activeTank.rect.left + TANK_SPEED),
-	                        activeTank.rect.top,
-	                        (float) (activeTank.rect.right + TANK_SPEED),
-	                        activeTank.rect.bottom);
-	
-	                if (activeTank.rect.intersect(otherTank.rect)) {
-	                    activeTank.rect.set((float) (activeTank.rect.left - TANK_SPEED),
-	                            activeTank.rect.top,
-	                            (float) (activeTank.rect.right - TANK_SPEED),
-	                            activeTank.rect.bottom);
-	                    return false;
-	                }
-	                else if (activeTank.rect.intersect(lScreenBorder)) {
-	                    activeTank.rect.set((float) (activeTank.rect.left - TANK_SPEED),
-	                            activeTank.rect.top,
-	                            (float) (activeTank.rect.right - TANK_SPEED),
-	                            activeTank.rect.bottom);
-	                    return false;
-	                }
-	                else if (activeTank.rect.intersect(rScreenBorder)) {
-	                    activeTank.rect.set((float) (activeTank.rect.left - TANK_SPEED),
-	                            activeTank.rect.top,
-	                            (float) (activeTank.rect.right - TANK_SPEED),
-	                            activeTank.rect.bottom);
-	                }
-	                else {
-	                    return true;
-	                }
+    public Collision checkForCollisions(HumanPlayer currentPlayer, Tank activeTank, boolean isRight){
+    	for(HumanPlayer otherPlayer : Environment.humanPlayers){
+    		if(currentPlayer.equals(otherPlayer)) continue;
+    		Tank otherTank = otherPlayer.get_controlled_tank();
+            if (activeTank.rect.intersect
+                    (otherTank.getRect())) {
+            	if(isRight){ //Rightward ram into other tank
+            		activeTank.rect.set(otherTank.rect.left-51, activeTank.rect.top, otherTank.rect.left-1, activeTank.rect.bottom);
+            		activeTank.setPosition((int)otherTank.rect.left-50, activeTank.getPosY());
+            	} else { //leftward ram into other tank
+            		activeTank.rect.set(otherTank.rect.right+1, activeTank.rect.top, otherTank.rect.right+51, activeTank.rect.bottom);
+            		activeTank.setPosition((int)otherTank.rect.right+1, activeTank.getPosY());
             	}
+            	//TODO add code for ramming
+                return Collision.TANK;
+            }
+            else if (activeTank.getRect().intersect
+                    (lScreenBorder)) {
+            	if(isRight) return Collision.NONE;
+            	else return Collision.BORDER;
+            }
+            else if (activeTank.getRect().intersect
+                    (rScreenBorder)) {
+            	if(!isRight) return Collision.NONE;
+            	else return Collision.BORDER;
             }
             
-            else if (!goingRight) {
-            	for(HumanPlayer otherPlayer : this.humanPlayers){
-            		Tank otherTank = otherPlayer.get_controlled_tank();
-	                activeTank.rect.set((float) (activeTank.rect.left - TANK_SPEED),
-	                        activeTank.rect.top,
-	                        (float) (activeTank.rect.right - TANK_SPEED),
-	                        activeTank.rect.bottom);
-	                if (activeTank.rect.intersect(otherTank.rect)) {
-	                    activeTank.rect.set((float) (activeTank.rect.left + TANK_SPEED),
-	                            activeTank.rect.top,
-	                            (float) (activeTank.rect.right + TANK_SPEED),
-	                            activeTank.rect.bottom);
-	                    return false;
-	                }
-	                else if (activeTank.rect.intersect(lScreenBorder)) {
-	                    activeTank.rect.set((float) (activeTank.rect.left - TANK_SPEED),
-	                            activeTank.rect.top,
-	                            (float) (activeTank.rect.right - TANK_SPEED),
-	                            activeTank.rect.bottom);
-	                    return false;
-	                }
-	                else if (activeTank.rect.intersect(rScreenBorder)) {
-	                    activeTank.rect.set((float) (activeTank.rect.left - TANK_SPEED),
-	                            activeTank.rect.top,
-	                            (float) (activeTank.rect.right - TANK_SPEED),
-	                            activeTank.rect.bottom);
-	                }
-	                else {
-	                    return true;
-	                }
-            	}
-            }
-        }
-        return false;
+            else continue;
+    	}
+    	return Collision.NONE;
     }
-    
+
     private void initializeTanks(int numberOfPlayers) {
     	Bitmap tankRight;
     	Bitmap tankLeft; //TODO Rename these, make for loop for initializing multiple tanks
@@ -215,8 +175,8 @@ public class Environment {
     	HumanPlayer playerTwo = new HumanPlayer(0, tankTwo, "Rommel");
     	
     	//Add all players to list of active players        
-        this.humanPlayers.add(playerOne); //TODO change as part of initialize multiple tank for loop
-        this.humanPlayers.add(playerTwo);
+        humanPlayers.add(playerOne); //TODO change as part of initialize multiple tank for loop
+        humanPlayers.add(playerTwo);
     }
     
     public void refreshEnvironment() {
@@ -275,7 +235,7 @@ public class Environment {
     }
     
     public void removeHumanPlayer(HumanPlayer deadman){
-    	this.humanPlayers.remove(deadman);
+    	humanPlayers.remove(deadman);
     }
     
     public void removeComputerPlayer(AI_Player deadman){

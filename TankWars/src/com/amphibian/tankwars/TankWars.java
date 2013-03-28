@@ -15,12 +15,10 @@ package com.amphibian.tankwars;
 
 import java.util.HashMap;
 
-import com.amphibian.environment.Environment;
+import com.amphibian.environment.*;
 import com.amphibian.player.AI_Player;
 import com.amphibian.player.HumanPlayer;
 import com.amphibian.player.Player;
-import com.amphibian.tank.Armament;
-import com.amphibian.tank.DamageType;
 import com.amphibian.tank.Tank;
 import com.amphibian.tank.TankCondition;
 import com.amphibian.tankwars.R;
@@ -29,7 +27,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.RectF;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
@@ -51,8 +48,9 @@ public class TankWars extends Activity {
     private HumanPlayer playerTwo;
     //TODO needs an array that stores players who are in the game, not necessarily in the round
     private Tank tankOne;
-    private Tank tankTwo; 
-    private boolean playerOneActive = true; //TODO remove, when ready for multiplayer
+    private Tank tankTwo;
+    private Player currentPlayer; //Contains the instance of the current player
+    private int currentPlayerIndex;  //Is the index for position in the player list
     private ImageView igEnvironment;
     private ImageView Directions[] = new ImageView[5];
     private boolean deleteThreadRunning = false;
@@ -83,6 +81,11 @@ public class TankWars extends Activity {
         
         tankOne = playerOne.get_controlled_tank();
         tankTwo = playerTwo.get_controlled_tank();
+        
+        //Set the current player
+        currentPlayerIndex = 0;
+        currentPlayer = Environment.humanPlayers.get(0);
+        currentPlayerIndex += 1;
         
         //Create sound interface.
         soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 100);
@@ -133,6 +136,16 @@ public class TankWars extends Activity {
         //Update the screen.
         igEnvironment.invalidate();
     }
+    
+    private void prepareNextPlayer(){
+    	//TODO Make for all players, not just human
+    	//We expect that currentPlayerIndex is iterated at the end of each call
+    	//So that the Index should be at a new position
+    	if(currentPlayerIndex >= Environment.humanPlayers.size()) //Loop index 
+    		currentPlayerIndex = 0;
+    	currentPlayer = Environment.humanPlayers.get(currentPlayerIndex);
+        currentPlayerIndex += 1;
+    }
 
     /**
      * Sets up the layout with the device.
@@ -152,7 +165,7 @@ public class TankWars extends Activity {
      * @param v
      */
     public void moveTankRight(View v) {
-        tankOne.move_tank(true, theEnvironment);
+        tankOne.move_tank(true);
     }
     
     /**
@@ -193,10 +206,7 @@ public class TankWars extends Activity {
      */
     private void startMoving(moveVal move) {
         if(!deleteThreadRunning && !pause) {
-            if(playerOneActive)
-                startMoveThread(move,tankOne, tankTwo); //TODO change what is passed to thread
-            else
-                startMoveThread(move,tankTwo, tankOne);
+        	startMoveThread(move); 
         }
         else if(!pause){
             deleteThreadRunning = false;
@@ -217,7 +227,8 @@ public class TankWars extends Activity {
 		        theEnvironment.drawTank(player.get_controlled_tank()); 
 	        }
         }
-        leftTankHeathTextView.setText(Integer.toString(tankOne.armor.getHPLeft())); //TODO softcode
+        //TODO change so that health is displayed when a tank is clicked on
+        leftTankHeathTextView.setText(Integer.toString(tankOne.armor.getHPLeft())); 
         rightTankHealthTextView.setText(Integer.toString(tankTwo.armor.getHPLeft()));
 //            theEnvironment.drawTankHitBox(playerOne);
 //            theEnvironment.drawTankHitBox(playerTwo);
@@ -228,12 +239,8 @@ public class TankWars extends Activity {
      * @param move
      * @param currPlayer
      */
-    private void startMoveThread(final moveVal move, final Tank currPlayer,
-            final Tank otherPlayer) {
-    	//TODO Make for loop for checking player array for winner
-    	//TODO Determine winner from last tank remaining
-        // Check if a player has won
-    	
+    private void startMoveThread(final moveVal move) {
+        // Check if a player has won    	
     	if(theEnvironment.humanPlayers.size() == 1){
     		HumanPlayer lastManStanding = theEnvironment.humanPlayers.get(0);
     		lastManStanding.winRound();
@@ -251,9 +258,9 @@ public class TankWars extends Activity {
         switch(move){
         case fire:
             //Fires the bullet.
-            fireBullet(currPlayer);
+            fireBullet();
             //Switches the active player
-            playerOneActive = (!playerOneActive);
+            prepareNextPlayer(); 
             break;
         default:
             break;
@@ -269,80 +276,60 @@ public class TankWars extends Activity {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
+                        	Tank activeTank = currentPlayer.get_controlled_tank();
+                        	Collision collisionVar = null;
+                        	boolean right = true; //moveLeft is !right
                             switch(move) {
                             //This moves the player right.
                             case moveRight:
                                 //Check environment collisions
-                                if (tankOne.getRect().intersect
-                                        (tankTwo.getRect())) {
-                                    tankOne.hasCollided = true;
-                                    tankTwo.hasCollided = true;
-                                }
-                                else if (tankOne.getRect().intersect
-                                        (theEnvironment.lScreenBorder)) {
-                                    tankOne.hasCollided = true;
-                                }
-                                else if (tankTwo.getRect().intersect
-                                        (theEnvironment.lScreenBorder)) {
-                                    tankTwo.hasCollided = true;
-                                }
-                                else if (tankOne.getRect().intersect
-                                        (theEnvironment.rScreenBorder)) {
-                                    tankOne.hasCollided = true;
-                                }
-                                else if (tankTwo.getRect().intersect
-                                        (theEnvironment.rScreenBorder)) {
-                                    tankTwo.hasCollided = true;
-                                }
-                                else {
-                                    tankOne.hasCollided = false;
-                                    tankTwo.hasCollided = false;
-                                }
-                                currPlayer.move_tank(true, theEnvironment);
+                            	//TODO Change so that checks all players
+                            	
+                            	//if(!activeTank.hasCollided()) activeTank.move_tank(true, theEnvironment);
+                            	//else activeTank.hasCollided = false;
+                            	collisionVar = 
+                            		theEnvironment.checkForCollisions((HumanPlayer)currentPlayer, 
+                            										   activeTank, right);
+                            	if(collisionVar == Collision.NONE)
+                            		activeTank.move_tank(right);
+                            	else if(collisionVar == Collision.TANK){
+                                	
+                            		cancelDeleteThread = false;
+	                            	//Switches the active player
+	                                prepareNextPlayer();
+                            	} else ;
                                 drawEnvironment();
                                 igEnvironment.invalidate();
                                 break;
                                 //This moves the player left.
                             case moveLeft:
                               //Check environment collisions
-                                if (tankOne.getRect().intersect
-                                        (tankTwo.getRect())) {
-                                    tankOne.hasCollided = true;
-                                    tankTwo.hasCollided = true;
-                                }
-                                else if (tankOne.getRect().intersect
-                                        (theEnvironment.lScreenBorder)) {
-                                    tankOne.hasCollided = true;
-                                }
-                                else if (tankTwo.getRect().intersect
-                                        (theEnvironment.lScreenBorder)) {
-                                    tankTwo.hasCollided = true;
-                                }
-                                else if (tankOne.getRect().intersect
-                                        (theEnvironment.rScreenBorder)) {
-                                    tankOne.hasCollided = true;
-                                }
-                                else if (tankTwo.getRect().intersect
-                                        (theEnvironment.rScreenBorder)) {
-                                    tankTwo.hasCollided = true;
-                                }
-                                else {
-                                    tankOne.hasCollided = false;
-                                    tankTwo.hasCollided = false;
-                                }
-                                currPlayer.move_tank(false, theEnvironment);
+                            	//TODO Change so that checks all players
+                            	collisionVar = 
+                        			theEnvironment.checkForCollisions((HumanPlayer)currentPlayer, 
+                        										   	  activeTank, !right);
+                            	if(collisionVar == Collision.NONE)
+                            		activeTank.move_tank(!right);
+                            	else if(collisionVar == Collision.TANK){
+                            		//activeTank.move_tank(right, theEnvironment);
+                            		
+                            		cancelDeleteThread = false;
+                            		//Switches the active player
+                                    prepareNextPlayer();
+                            	}
+                            	else ;
                                 drawEnvironment();
                                 igEnvironment.invalidate();
                                 break;
                                 //This moves the turret down.
                             case turrDown:
-                                currPlayer.turret.turret_move(false);
+                                activeTank.turret.turret_move(false);
                                 drawEnvironment();
                                 igEnvironment.invalidate();
                                 break;
                                 //This moves the turret up.
                             case turrUp:
-                                currPlayer.turret.turret_move(true);
+                                activeTank.turret.turret_move(true);
                                 drawEnvironment();
                                 igEnvironment.invalidate();
                                 break;
@@ -379,13 +366,14 @@ public class TankWars extends Activity {
      * This fires the bullet from players position.
      * @param Player
      */
-    private void fireBullet(final Tank Player) {
-    //TODO rename to "fire", move to turret, and remove arguments	
+    private void fireBullet() {	
     //Ensure no other buttons can be pressed.
     pause = true;
     
-    Environment.isShotRight = Player.getRotate();
-    Environment.weaponInPlay = Player.turret.fire(Environment.isShotRight, Player.getPosX());
+    final Tank activeTank = currentPlayer.get_controlled_tank();
+    
+    Environment.isShotRight = activeTank.getRotate();
+    Environment.weaponInPlay = activeTank.turret.fire(Environment.isShotRight, activeTank.getPosX());
     
     //This starts a thread
     Thread thread =  new Thread() {
@@ -399,7 +387,7 @@ public class TankWars extends Activity {
                 	final double fin = Environment.timeInFlight;
                 	for(Player otherPlayer : Environment.humanPlayers){ 
                 		Tank otherTank = otherPlayer.get_controlled_tank();
-                		if(otherTank.equals(Player)) continue;
+                		if(otherTank.equals(activeTank)) continue;
 	                    // Check if shot hit other tank
 	                    if (Environment.weaponInPlay.bulHitBox.
 	                            intersect(otherTank.getRect())) {
@@ -412,7 +400,6 @@ public class TankWars extends Activity {
 	                                (AudioManager.STREAM_MUSIC)
 	                                , 1, 0, 1f);
 	                        otherTank.wasShot = true;
-	                        //TODO need to change next line for armament damage and tank destruction
 	                        TankCondition otherTankStatus = 
 	                        		otherTank.strikeTank(Environment.weaponInPlay);
 	                        if(otherTankStatus == TankCondition.DESTROYED){
