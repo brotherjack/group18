@@ -153,7 +153,7 @@ public class Environment {
         //This rotates the right tank bitmap and makes it the left tank.
         tankLeft = Bitmap.createBitmap(tankRight, 0, 0, 
                 tankRight.getWidth(), tankRight.getHeight(),m, false);
-        tankLeft.setDensity(DisplayMetrics.DENSITY_DEFAULT);
+        tankLeft = Bitmaps.resizeBitmap(tankLeft, tankWidth, tankHeight);
         
         //This rotates the right turret bitmap and makes the left turret.
         turretLeft = Bitmap.createBitmap(turretRight, 0, 0, 
