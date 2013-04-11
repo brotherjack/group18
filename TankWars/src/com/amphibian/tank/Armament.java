@@ -3,7 +3,7 @@ package com.amphibian.tank;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 
-public abstract class Armament<T> {
+public abstract class Armament {
 	protected Bitmap sprite;
 	private double effect_radius;
 	protected float projectileXPos; 
@@ -11,19 +11,13 @@ public abstract class Armament<T> {
     public RectF bulHitBox = new RectF(0, 0, 0, 0);
     protected int power = 100;
     protected int angle;
-    private int directDamage;
-    private int secondaryDamage;
-    private DamageType directDmgType;
-    private DamageType secondaryDmgType;
+    protected int directDamage;
+    protected int secondaryDamage;
+    protected DamageType directDmgType;
+    protected DamageType secondaryDmgType;
 	
 	protected abstract void on_detonate();
 	protected abstract DamageTuple directHit();
-	
-	private T type;          
-
-    public void set(T t) {
-        this.type = t;
-    }
 	
 	/**
      * @param t

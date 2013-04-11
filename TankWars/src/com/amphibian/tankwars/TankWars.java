@@ -241,8 +241,8 @@ public class TankWars extends Activity {
      */
     private void startMoveThread(final moveVal move) {
         // Check if a player has won    	
-    	if(theEnvironment.humanPlayers.size() == 1){
-    		HumanPlayer lastManStanding = theEnvironment.humanPlayers.get(0);
+    	if(Environment.humanPlayers.size() == 1){
+    		HumanPlayer lastManStanding = Environment.humanPlayers.get(0);
     		lastManStanding.winRound();
     		
     		Toast.makeText(getBaseContext(), lastManStanding.get_name() + " wins!",
@@ -382,6 +382,7 @@ public class TankWars extends Activity {
             try {
                 Environment.timeInFlight = 0.0;
                 
+                //TODO there is no reason why a method in Environment needs to be passed variables from itself
                 while(Environment.weaponInPlay.getBulletY(Environment.timeInFlight, Environment.GRAVITY) < 150 - 1 / 7)
                 {
                 	final double fin = Environment.timeInFlight;
@@ -405,7 +406,7 @@ public class TankWars extends Activity {
 	                        if(otherTankStatus == TankCondition.DESTROYED){
 	                        	//TODO MAKE GRAPHFIX FOR SPLOSION!
 	                        	//TODO MAKE BOOM BOOM SOUND maybe also BLOOD SPLATTER
-	                        	theEnvironment.humanPlayers.remove(otherPlayer);
+	                        	Environment.humanPlayers.remove(otherPlayer);
 	                        }
 	                        return;
 	                    }

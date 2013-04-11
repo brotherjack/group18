@@ -48,7 +48,7 @@ public class Environment {
     private Bitmap curr;
     public static ArrayList<HumanPlayer> humanPlayers; //TODO Should this be an array?
     private ArrayList<AI_Player> computerPlayers;
-    public static Armament<?> weaponInPlay; 
+    public static Armament weaponInPlay; 
     public static double timeInFlight; //TODO make private?
     public static boolean isShotRight;
     private Bitmap turretLeft;
@@ -89,7 +89,7 @@ public class Environment {
     	Collections.shuffle(humanPlayers, new Random(seed));
     }
     
-    public Armament<?> getWeaponInPlay(){ return Environment.weaponInPlay; }
+    public Armament getWeaponInPlay(){ return Environment.weaponInPlay; }
     
     public ArrayList<HumanPlayer> getActiveHumanPlayers() { return humanPlayers; }
     

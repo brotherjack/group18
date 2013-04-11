@@ -1,15 +1,12 @@
 package com.amphibian.tank;
 
-import com.amphibian.environment.Environment;
-import com.amphibian.tank.Shell.Standard_Shell;
-
 public abstract class Turret {
 	private final double DEGREE_AMMOUNT = 1.0;
 	protected int angle;
     protected double power;
-	protected static Armament<?> selected_weapon;
+	protected static Armament selected_weapon;
 	
-	public Armament<?> fire(boolean direction, float tankposX){ //TODO add a ypos
+	public Armament fire(boolean direction, float tankposX){ //TODO add a ypos
 	    //Gets the bullets position.
 	    if(direction)
 	        Turret.selected_weapon.setBulletPos(
@@ -46,7 +43,7 @@ public abstract class Turret {
     }
 	
 	public static class Standard_Turret extends Turret{ //TODO Should Armor,Armament and this be static?
-		public <Arms extends Armament<Arms>> Standard_Turret(Arms weapon){ //TODO add this constructor to TANK_CLASS uml diagram  
+		public Standard_Turret(Armament weapon){ //TODO add this constructor to TANK_CLASS uml diagram  
 			this.power = 100;
 			this.angle = 0;
 			Standard_Turret.selected_weapon = weapon;

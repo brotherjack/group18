@@ -16,8 +16,6 @@
  */
 package com.amphibian.tank;
 
-import com.amphibian.environment.Environment;
-
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 
@@ -127,13 +125,6 @@ public class Tank {
      */
     public boolean hasCollided() {
         return this.hasCollided;
-    }
-    
-    /**
-     * @return True if the tank was shot
-     */
-    public boolean wasShot() { //TODO probably need to delete this
-        return this.wasShot;
     }
     
     public int[] getPosition(){ return new int[] {this.positionx, this.positiony}; }
